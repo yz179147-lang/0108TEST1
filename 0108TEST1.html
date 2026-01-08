@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>三年級數學素養挑戰賽</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap');
+
+        :root {
+            --primary-color: #4CAF50;
+            --secondary-color: #2196F3;
+            --accent-color: #FF9800;
+            --bg-color: #f0f8ff;
+            --card-bg: #ffffff;
+            --text-color: #333;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            /* 防止 iOS 點擊高亮 */
+            -webkit-tap-highlight-color: transparent; 
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            width: 100%;
+            max-width: 800px;
+            padding: 30px;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+            /* 平板優化：增加底部空間 */
+            padding-bottom: 50px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-size: 1.8em;
+            border-bottom: 4px solid #ffcc00;
+            padding-bottom: 10px;
+            display: inline-block;
+            width: 100%;
+        }
+
+        /* 進度條優化 */
+        .progress-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .progress-label {
+            font-size: 0.9em;
+            font-weight: bold;
+            color: #666;
+            margin-right: 10px;
+            white-space: nowrap;
+        }
+
+        .progress-bar {
+            flex-grow: 1;
+            background-color: #eee;
+            border-radius: 20px;
+            height: 15px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #66bb6a, #43a047);
+            width: 0%;
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 20px;
+        }
+
+        /* 題組情境區塊 */
+        .scenario-box {
+            background-color: #e3f2fd;
+            border-left: 6px solid var(--secondary-color);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            font-size: 1.15em;
+            line-height: 1.7;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .scenario-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 5px;
+        }
+
+        .scenario-icon {
+            width: 50px;
+            height: 50px;
+            flex-shrink: 0;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .scenario-icon svg {
+            width: 30px;
+            height: 30px;
+            fill: var(--secondary-color);
+        }
+
+        .scenario-title {
+            font-weight: bold;
+            color: #1565C0;
+            font-size: 1.3em;
+        }
+
+        /* 情境圖片樣式 */
+        .scenario-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            background-color: #f5f5f5; /* 圖片載入前的底色 */
+            display: block;
+        }
+
+        /* 題目卡片優化 */
+        .question-card {
+            background-color: #fffde7;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 15px;
+            border: 2px solid #fff59d;
+            transition: transform 0.2s;
+        }
+
+        .question-card:focus-within {
+            border-color: var(--accent-color);
+            transform: scale(1.01);
+        }
+
+        .question-text {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            display: block;
+            color: #444;
+        }
+
+        .point-badge {
+            display: inline-block;
+            background-color: #fff59d;
+            color: #f57f17;
+            font-size: 0.8em;
+            padding: 2px 8px;
+            border-radius: 10px;
+            border: 1px solid #fbc02d;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
+        /* 輸入框觸控優化 */
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            margin-top: 5px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1.1em;
+            box-sizing: border-box;
+            background-color: white;
+            transition: border-color 0.3s;
+            -webkit-appearance: none;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--secondary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.2);
+        }
+
+        /* 按鈕觸控優化 */
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 18px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.3em;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: transform 0.1s, background-color 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-next {
+            background-color: var(--secondary-color);
+            display: none;
+        }
+
+        .feedback {
+            margin-top: 15px;
+            font-weight: bold;
+            padding: 15px;
+            border-radius: 10px;
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .correct {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+
+        .incorrect {
+            background-color: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+
+        .note {
+            font-size: 0.9em;
+            color: #757575;
+            margin-top: 8px;
+            font-style: italic;
+            background-color: rgba(255,255,255,0.5);
+            padding: 5px 10px;
+            border-radius: 5px;
+            display: inline-block;
+        }
+
+        /* 結果畫面 */
+        .result-screen {
+            text-align: center;
+            display: none;
+            padding: 20px;
+        }
+
+        .score-display {
+            font-size: 4em;
+            font-weight: bold;
+            color: var(--secondary-color);
+            margin: 20px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .badge {
+            font-size: 6em;
+            margin-bottom: 20px;
+            display: inline-block;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-20px);}
+            60% {transform: translateY(-10px);}
+        }
+
+        /* RWD 調整 */
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+                border-radius: 15px;
+            }
+            h1 { font-size: 1.5em; }
+            .scenario-box { padding: 15px; font-size: 1em; }
+            .scenario-icon { width: 40px; height: 40px; }
+            .scenario-icon svg { width: 20px; height: 20px; }
+            .scenario-image { height: 180px; } /* 手機版圖片高度減小 */
+            .btn { font-size: 1.1em; padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="quiz-screen">
+        <h1>🔢 三年級數學素養挑戰</h1>
+        
+        <div class="progress-container">
+            <span class="progress-label" id="progress-text">Level 1/10</span>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress"></div>
+            </div>
+        </div>
+
+        <div id="quiz-content">
+            <!-- 題目內容將由 JavaScript 動態載入 -->
+        </div>
+
+        <button class="btn" id="submit-btn" onclick="checkAnswers()">送出答案</button>
+        <button class="btn btn-next" id="next-btn" onclick="nextQuestion()">下一題組 ➔</button>
+    </div>
+
+    <div id="result-screen" class="result-screen">
+        <div class="badge" id="result-badge">🏆</div>
+        <h2 style="color: #444; margin-bottom: 10px;">測驗完成！</h2>
+        <p style="font-size: 1.2em; color: #666;">你的總得分是：</p>
+        <div class="score-display" id="final-score">0 / 100</div>
+        <p id="result-comment" style="font-size: 1.3em; font-weight: bold; color: #FF9800; margin-bottom: 40px;">做得太棒了！</p>
+        <button class="btn" onclick="location.reload()" style="background-color: var(--primary-color);">再挑戰一次</button>
+    </div>
+</div>
+
+<script>
+    // SVG Icons
+    const icons = {
+        lock: `<svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>`,
+        drink: `<svg viewBox="0 0 24 24"><path d="M20 2H4v20h16V2zm-9 6H6v-2h5v2zm0 4H6v-2h5v2zm0 4H6v-2h5v2zm7-8h-5v-2h5v2zm0 4h-5v-2h5v2zm0 4h-5v-2h5v2zM3 22h18v2H3z"/></svg>`,
+        road: `<svg viewBox="0 0 24 24"><path d="M12 2L4 22h16L12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>`, 
+        book: `<svg viewBox="0 0 24 24"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/></svg>`,
+        bucket: `<svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-3.31-2.69-6-6-6s-6 2.69-6 6c0 .33.02.64.06.94L4.78 12C4.34 10.74 4 9.4 4 8c0-4.42 3.58-8 8-8s8 3.58 8 8c0 1.4-.34 2.74-.78 4l-2.08.94zM12 4c-2.21 0-4 1.79-4 4 0 1.8 1.18 3.32 2.8 3.82L12 11l1.2.82C14.82 11.32 16 9.8 16 8c0-2.21-1.79-4-4-4z"/><path d="M2 12v9c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2v-9l-10-4-10 4z"/></svg>`, 
+        ticket: `<svg viewBox="0 0 24 24"><path d="M13 13v8h8v-8h-8zM3 21h8v-8H3v8zM3 3v8h8V3H3zm13.66-1.31L11 7.34 16.66 13l5.66-5.66-5.66-5.65z"/></svg>`,
+        soup: `<svg viewBox="0 0 24 24"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6 10H6v-2h8v2zm4-4H6v-2h12v2z"/></svg>`, 
+        chest: `<svg viewBox="0 0 24 24"><path d="M20 6h-2.18c.11-.31.18-.65.18-1 0-1.66-1.34-3-3-3-1.05 0-1.96.54-2.5 1.35l-.5.67-.5-.68C10.96 2.54 10.05 2 9 2 7.34 2 6 3.34 6 5c0 .35.07.69.18 1H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-5-2c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM9 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm11 15H4v-2h16v2zm0-5H4V8h5.08L7 10.83 8.62 12 11 8.76l1-1.36 1 1.36L15.38 12 17 10.83 14.92 8H20v6z"/></svg>`,
+        bottle: `<svg viewBox="0 0 24 24"><path d="M15.5 19.1l-2.8-8.4c-.4-1.2-1-1.7-2.1-1.7H9.4c-1.1 0-1.7.5-2.1 1.7l-2.8 8.4c-.2.6.2 1.3.9 1.3h9.2c.6 0 1.1-.7.9-1.3zM18 5H6C4.9 5 4 5.9 4 7v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-6 8h-2v-2h2v2zm0-4h-2V7h2v2z"/></svg>`,
+        ruler: `<svg viewBox="0 0 24 24"><path d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 10H3V8h2v4h2V8h2v4h2V8h2v4h2V8h2v8z"/></svg>`
+    };
+
+    // 題目資料庫
+    const quizData = [
+        {
+            title: "題組一：古堡的密碼鎖",
+            icon: icons.lock,
+            image: "https://images.unsplash.com/photo-1599596398939-f9c47c231709?auto=format&fit=crop&w=600&q=80",
+            story: "探險隊來到一座古堡，大門上掛著一個神祕的四位數密碼鎖。鎖旁刻著一段謎題：「打開我的人，必須解開數字的奧祕。」<br>牆上依序寫著三條訊息：<br>1. 這個密碼是一個四位數，且數字比 5000 大。<br>2. 它的千位數是 6，個位數是 0。<br>3. 它的百位數是千位數的一半，而十位數比百位數還要大 2。",
+            questions: [
+                { text: "1. 根據牆上的訊息，請問這個密碼的百位數是多少？", answer: "3", type: "number" },
+                { text: "2. 根據牆上的訊息，請問這個密碼的十位數是多少？", answer: "5", type: "number" },
+                { text: "3. 請寫出這組正確的四位數密碼。", answer: "6350", type: "number" }
+            ]
+        },
+        {
+            title: "題組二：飲料店的超級桶",
+            icon: icons.drink,
+            image: "https://images.unsplash.com/photo-1543253687-c59975471a12?auto=format&fit=crop&w=600&q=80",
+            story: "夏天到了，「清涼飲料店」推出了兩種不同容量的容器。<br>● 超級桶：容量標示為 2 公升。<br>● 分享瓶：容量標示為 450 毫升。<br>店長正在舉辦促銷活動，他把一桶裝滿的「超級桶」飲料，倒滿了 3 瓶「分享瓶」請現場的顧客試喝。",
+            questions: [
+                { text: "1. 請問一桶「超級桶」的容量，相當於多少毫升？(填數字)", answer: "2000", type: "number" },
+                { text: "2. 店長倒出了 3 瓶分享瓶後，總共倒出了多少毫升的飲料？(填數字)", answer: "1350", type: "number" },
+                { text: "3. 倒完這 3 瓶後，超級桶裡面還剩下多少毫升的飲料？(填數字)", answer: "650", type: "number" }
+            ]
+        },
+        {
+            title: "題組三：高速公路的里程牌",
+            icon: icons.road,
+            image: "https://images.unsplash.com/photo-1565514020176-db93122c938d?auto=format&fit=crop&w=600&q=80",
+            story: "陳叔叔開貨車送貨，行駛在一條筆直的高速公路上。這條公路的里程牌數字越往南走會越大。<br>● 上午 10:00，陳叔叔經過了標示 3050 的路牌。<br>● 上午 11:00，陳叔叔經過了標示 3145 的路牌。<br>陳叔叔預計要在標示 3200 的休息站停車吃午餐。",
+            questions: [
+                { text: "1. 從上午 10:00 到 11:00 這段時間，陳叔叔的車子行駛了多少公里？", answer: "95", type: "number" },
+                { text: "2. 當車子到達 3145 的路牌時，距離陳叔叔想去的休息站還有多少公里？", answer: "55", type: "number" },
+                { text: "3. 如果陳叔叔不小心開過頭，看到了標示 3210 的路牌，請問他現在的位置是在休息站的南方還是北方？", answer: "南方", type: "text", note: "提示：數字越往南越大，3210比3200大" }
+            ]
+        },
+        {
+            title: "題組四：圖書館的書籍歸位",
+            icon: icons.book,
+            image: "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=600&q=80",
+            story: "圖書館員小美正在整理「科學類」的書架。這排書架專門擺放索書號在 5000 到 6000 之間的書籍。<br>現在手邊有三本剛還回來的書，索書號分別是：<br>● A 書：5090<br>● B 書：5905<br>● C 書：5509",
+            questions: [
+                { text: "1. 請將這三本書的索書號由小到大排列出來。(請填代號，如 ABC)", answer: "ACB", type: "text" },
+                { text: "2. 小美發現架上還有一本舊書，索書號是 5□00。已知這本舊書的號碼比 A 書大，但比 C 書小。請問 □ 裡面的數字可能是哪些？(請寫出所有數字，不用空格，如 123)", answer: "1234", type: "text", note: "提示：大於5090，小於5500" },
+                { text: "3. 承上題，如果這本舊書的號碼比 C 書小了 100 以上，那麼 □ 裡面的數字確定是多少？", answer: "4", type: "number" }
+            ]
+        },
+        {
+            title: "題組五：儲水大作戰",
+            icon: icons.bucket,
+            image: "https://images.unsplash.com/photo-1599156637379-3733224b7a0f?auto=format&fit=crop&w=600&q=80",
+            story: "為了因應停水通知，媽媽拿出了三個不同顏色的水桶來儲水。<br>● 紅桶：容量 2 公升 50 毫升。<br>● 藍桶：容量 2500 毫升。<br>● 綠桶：容量 1950 毫升。",
+            questions: [
+                { text: "1. 請將紅桶的容量換算成毫升。", answer: "2050", type: "number" },
+                { text: "2. 請問哪一個顏色的水桶容量最大？(請填顏色：紅、藍或綠)", answer: "藍", type: "text" },
+                { text: "3. 如果媽媽先將綠桶裝滿水，再全部倒入空的紅桶裡，請問紅桶還剩下多少毫升的空間可以裝水？", answer: "100", type: "number" }
+            ]
+        },
+        {
+            title: "題組六：遊樂園的集點卡",
+            icon: icons.ticket,
+            image: "https://images.unsplash.com/photo-1532561917639-6f3434190c73?auto=format&fit=crop&w=600&q=80",
+            story: "快樂遊樂園推出集點換獎品活動。<br>● 累積滿 6000 點：可兌換一隻巨型恐龍玩偶。<br>● 累積滿 9000 點：可兌換一台平板電腦。<br>哥哥的集點卡目前有 5450 點，弟弟的集點卡有 2800 點。遊樂園規定直系親屬的點數可以合併計算。",
+            questions: [
+                { text: "1. 哥哥還差多少點，就可以自己單獨兌換巨型恐龍玩偶？", answer: "550", type: "number" },
+                { text: "2. 如果兄弟兩人的點數合併，總共有多少點？", answer: "8250", type: "number" },
+                { text: "3. 承上題，兩人點數合併後，距離兌換平板電腦還差多少點？", answer: "750", type: "number" }
+            ]
+        },
+        {
+            title: "題組七：營養午餐的湯桶",
+            icon: icons.soup,
+            image: "https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=600&q=80",
+            story: "廚房阿姨煮了一大鍋 9 公升的紫菜蛋花湯，準備分給三年級的三個班級。<br>● 甲班派人來裝走了 2 公升 500 毫升。<br>● 乙班派人來裝走了 3 公升 200 毫升。<br>● 剩下的湯全部留給丙班。",
+            questions: [
+                { text: "1. 甲班和乙班總共裝走了多少毫升的湯？", answer: "5700", type: "number" },
+                { text: "2. 大鍋子裡最後還剩下多少毫升的湯可以給丙班？", answer: "3300", type: "number" },
+                { text: "3. 已知丙班有 30 位學生，每位學生大概需要喝 100 毫升的湯。請問剩下的湯夠不夠？(請填：夠或不夠)", answer: "夠", type: "text" }
+            ]
+        },
+        {
+            title: "題組八：探險家的寶箱",
+            icon: icons.chest,
+            image: "https://images.unsplash.com/photo-1605632296089-9dd36072a452?auto=format&fit=crop&w=600&q=80",
+            story: "探險家在沙漠中挖到了一個寶箱，裡面裝滿了古代的錢幣。根據古書記載：<br>● 1 枚金幣 = 1000 元<br>● 1 枚銀幣 = 100 元<br>● 1 枚銅幣 = 10 元<br>探險家清點後發現，寶箱裡共有：4 枚金幣、15 枚銀幣 和 6 枚銅幣。",
+            questions: [
+                { text: "1. 探險家把所有的「銀幣」拿去兌換，總共價值多少元？", answer: "1500", type: "number" },
+                { text: "2. 請計算寶箱裡所有錢幣加起來的總價值是多少元？", answer: "5560", type: "number" },
+                { text: "3. 如果想把這些錢換成「數量最少」的硬幣組合(進位)，他應該會擁有幾枚金幣？", answer: "5", type: "number" }
+            ]
+        },
+        {
+            title: "題組九：運動選手的水壺",
+            icon: icons.bottle,
+            image: "https://images.unsplash.com/photo-1602143407151-01114192003b?auto=format&fit=crop&w=600&q=80",
+            story: "馬拉松選手小剛帶了一個容量 2 公升的大水壺去練習。<br>練習前，他在水壺裡裝了 1 公升 200 毫升的水。<br>練習中，他喝掉了一些水，現在水壺裡只剩下 500 毫升的水。<br>練習結束後，教練又幫他在水壺裡加滿了 800 毫升的運動飲料。",
+            questions: [
+                { text: "1. 請問小剛在練習過程中，總共喝掉了多少毫升的水？", answer: "700", type: "number" },
+                { text: "2. 教練加入運動飲料後，現在水壺裡的液體總共有多少毫升？", answer: "1300", type: "number" },
+                { text: "3. 加完運動飲料後，水壺裡的水會滿出來嗎？(請填：會或不會)", answer: "不會", type: "text" }
+            ]
+        },
+        {
+            title: "題組十：跳遠比賽的成績單",
+            icon: icons.ruler,
+            image: "https://images.unsplash.com/photo-1587324438697-d51d9eb193f1?auto=format&fit=crop&w=600&q=80",
+            story: "校慶運動會舉辦立定跳遠比賽，裁判正在記錄成績（單位：公分）。<br>● 第一名：小強，跳了 185 公分。<br>● 第二名：小明，跳了 178 公分。<br>● 第三名：小華，成績紀錄被水弄髒了，看起來是 1□6 公分。<br>已知條件：小華是第三名，且前三名的成績都不一樣。",
+            questions: [
+                { text: "1. 第一名和第二名的成績相差多少公分？", answer: "7", type: "number" },
+                { text: "2. 因為小華是第三名，且個位數是6，請問□裡可能是哪些數字？(請寫出所有可能數字，如 123)", answer: "01234567", type: "text", note: "提示：1□6 必須小於 178" },
+                { text: "3. 如果裁判說：「小華的成績和小明只差不到 10 公分。」那麼 □ 裡的數字確定是多少？", answer: "7", type: "number" }
+            ]
+        }
+    ];
+
+    let currentSetIndex = 0;
+    let score = 0;
+
+    function loadQuiz() {
+        const content = document.getElementById('quiz-content');
+        const progressBar = document.getElementById('progress');
+        const progressText = document.getElementById('progress-text');
+        const set = quizData[currentSetIndex];
+
+        // 更新進度條
+        const progressPercent = ((currentSetIndex) / quizData.length) * 100;
+        progressBar.style.width = progressPercent + '%';
+        progressText.innerText = `Level ${currentSetIndex + 1}/${quizData.length}`;
+
+        // 載入題目 HTML (加入圖片)
+        let html = `
+            <div class="scenario-box">
+                <img src="${set.image}" class="scenario-image" alt="情境圖示" onerror="this.style.display='none'">
+                <div class="scenario-header">
+                    <div class="scenario-icon">${set.icon}</div>
+                    <div class="scenario-title">${set.title}</div>
+                </div>
+                ${set.story}
+            </div>
+        `;
+
+        set.questions.forEach((q, index) => {
+            // Determine points for display
+            let pts = 3;
+            if (index === 2) pts = 4;
+
+            html += `
+                <div class="question-card" id="card-${index}">
+                    <label class="question-text">${q.text} <span class="point-badge">${pts} 分</span></label>
+                    <input type="text" id="answer-${index}" placeholder="請輸入答案" autocomplete="off">
+                    ${q.note ? `<div class="note">${q.note}</div>` : ''}
+                    <div class="feedback" id="feedback-${index}"></div>
+                </div>
+            `;
+        });
+
+        content.innerHTML = html;
+        document.getElementById('submit-btn').style.display = 'block';
+        document.getElementById('next-btn').style.display = 'none';
+        
+        // 滾動到頂部
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function cleanInput(str) {
+        if(!str) return "";
+        let s = str.toString().replace(/\s+/g, '');
+        s = s.replace(/，/g, ','); 
+        s = s.replace(/(元|公升|毫升|公分|點|公里|枚|個)/g, '');
+        return s.toUpperCase();
+    }
+
+    function checkAnswers() {
+        const set = quizData[currentSetIndex];
+        let allCorrect = true;
+
+        set.questions.forEach((q, index) => {
+            const inputEl = document.getElementById(`answer-${index}`);
+            const userInput = inputEl.value;
+            const feedbackEl = document.getElementById(`feedback-${index}`);
+            
+            const cleanedUserAnswer = cleanInput(userInput);
+            const cleanedCorrectAnswer = cleanInput(q.answer);
+
+            let isCorrect = false;
+            if (cleanedUserAnswer === cleanedCorrectAnswer) {
+                isCorrect = true;
+            } 
+            else if (cleanedUserAnswer.replace(/,/g, '') === cleanedCorrectAnswer) {
+                isCorrect = true;
+            }
+
+            // 配分邏輯
+            let points = 3;
+            if (index === 2) points = 4;
+
+            if (isCorrect) {
+                feedbackEl.innerHTML = `✅ 答對了！ (+${points}分)`;
+                feedbackEl.className = "feedback correct";
+                feedbackEl.style.display = "block";
+                score += points;
+            } else {
+                feedbackEl.innerHTML = `❌ 加油！正確答案是：${q.answer}`;
+                feedbackEl.className = "feedback incorrect";
+                feedbackEl.style.display = "block";
+                allCorrect = false;
+            }
+            
+            // 鎖定輸入框
+            inputEl.disabled = true;
+        });
+
+        document.getElementById('submit-btn').style.display = 'none';
+        document.getElementById('next-btn').style.display = 'block';
+    }
+
+    function nextQuestion() {
+        currentSetIndex++;
+        if (currentSetIndex < quizData.length) {
+            loadQuiz();
+        } else {
+            showResult();
+        }
+    }
+
+    function showResult() {
+        document.getElementById('quiz-screen').style.display = 'none';
+        document.getElementById('result-screen').style.display = 'block';
+        
+        const finalScoreEl = document.getElementById('final-score');
+        const commentEl = document.getElementById('result-comment');
+        const badgeEl = document.getElementById('result-badge');
+
+        const maxScore = 100;
+        finalScoreEl.innerText = `${score} / ${maxScore}`;
+
+        if (score >= 90) {
+            badgeEl.innerText = "🏆";
+            commentEl.innerText = "太厲害了！你是數學小天才！";
+        } else if (score >= 80) {
+            badgeEl.innerText = "🥇";
+            commentEl.innerText = "非常棒！邏輯觀念很清楚喔！";
+        } else if (score >= 60) {
+            badgeEl.innerText = "🥈";
+            commentEl.innerText = "不錯喔！再多練習一下會更強！";
+        } else {
+            badgeEl.innerText = "💪";
+            commentEl.innerText = "別灰心，多讀幾次題目，你一定學得會！";
+        }
+    }
+
+    // 初始化
+    loadQuiz();
+
+</script>
+
+</body>
+</html>
